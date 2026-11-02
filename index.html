@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LCPS Middle School Grade Calculator & Policy 5030 Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lcps: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#4f46e5',
+                            600: '#4338ca',
+                            700: '#3730a3',
+                            900: '#312e81'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-full flex flex-col">
+
+    <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-700 p-2.5 rounded-xl shadow-inner border border-indigo-500/40">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-indigo-200"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">LCPS Middle School Hub</h1>
+                    <p class="text-xs text-indigo-200">Policy 5030 Compliant • Grades & Calendar 2026–2027</p>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="flex bg-indigo-950/60 p-1 rounded-xl border border-indigo-700/50 overflow-x-auto">
+                <button id="tabBtnGrades" onclick="switchTab('grades')" class="px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 bg-indigo-600 text-white shadow-sm whitespace-nowrap">
+                    <i class="fa-solid fa-calculator"></i> Grade Calculator
+                </button>
+                <button id="tabBtnCredits" onclick="switchTab('credits')" class="px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 text-indigo-200 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-award"></i> Credits & GPA
+                </button>
+                <button id="tabBtnArchive" onclick="switchTab('archive')" class="px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 text-indigo-200 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-box-archive"></i> Archive
+                </button>
+                <button id="tabBtnGrid" onclick="switchTab('grid')" class="px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 text-indigo-200 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-calendar"></i> Calendar
+                </button>
+                <button id="tabBtnCalendar" onclick="switchTab('calendar')" class="px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 text-indigo-200 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-list-check"></i> Event List
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openAuthModal()" id="userAuthBtn" class="bg-indigo-800/80 hover:bg-indigo-700 text-indigo-100 px-3 py-2 rounded-lg text-xs font-semibold transition border border-indigo-600 flex items-center gap-2" title="Account / Sign In">
+                    <div id="userAvatarContainer" class="w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] overflow-hidden border border-indigo-400">
+                        <i class="fa-solid fa-user" id="userAvatarIcon"></i>
+                        <img id="userAvatarImg" class="w-full h-full object-cover hidden" src="" alt="Profile">
+                    </div>
+                    <span id="userAuthLabel">Sign In</span>
+                </button>
+                <button onclick="openSettingsModal()" class="bg-indigo-800/80 hover:bg-indigo-700 text-indigo-100 p-2 rounded-lg text-xs font-semibold transition border border-indigo-600 flex items-center justify-center" title="Settings">
+                    <i class="fa-solid fa-gear text-sm"></i>
+                </button>
+                <button onclick="openPolicyModal()" class="bg-indigo-800/80 hover:bg-indigo-700 text-indigo-100 px-3 py-2 rounded-lg text-xs font-semibold transition border border-indigo-600 flex items-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved"></i> Rules
+                </button>
+                <button id="actionBtnGradeCalc" onclick="openWhatIfModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-bullseye"></i> Goal Calc
+                </button>
+                <button id="actionBtnAddClass" type="button" onclick="openAddClassModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus"></i> Add Class
+                </button>
+                <button id="actionBtnAddEvent" onclick="openAddEventModal()" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-lg text-xs font-semibold transition shadow-sm flex items-center gap-1.5">
+                    <i class="fa-solid fa-calendar-plus"></i> Add Event
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- TAB 1: GRADE CALCULATOR -->
+        <div id="tabContentGrades" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Cumulative GPA</p>
+                        <h2 id="cumulativeGpa" class="text-3xl font-extrabold text-indigo-900 mt-1">--</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Scale: 4.3 Max (A+)</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Active Classes</p>
+                        <h2 id="activeClassesCount" class="text-3xl font-extrabold text-indigo-900 mt-1">0</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Core & Electives</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Category Weighting</p>
+                        <h2 id="countyWeightLabel" class="text-sm font-extrabold text-slate-800 mt-1">60% Major / 30% Minor / 10% Form</h2>
+                        <p id="countyNameLabel" class="text-xs text-slate-400 mt-0.5">Loudoun County (LCPS Standard)</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Class Cards Container -->
+            <div id="activeClassesCardsContainer" class="space-y-4">
+                <!-- Class cards injected dynamically -->
+            </div>
+        </div>
+
+        <!-- NEW TAB: CREDITS & GRADUATION PROGRESS -->
+        <div id="tabContentCredits" class="hidden space-y-6">
+            <!-- GPA Summary Banner -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">High School GPA</p>
+                        <h2 id="hsCreditGpa" class="text-3xl font-extrabold text-indigo-900 mt-1">--</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">HS Credit Bearing Courses Only</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Credits Earned</p>
+                        <h2 id="totalCreditsEarned" class="text-3xl font-extrabold text-emerald-600 mt-1">0 / 22</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Completed Courses</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-certificate"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">In-Progress Credits</p>
+                        <h2 id="totalCreditsInProgress" class="text-3xl font-extrabold text-amber-500 mt-1">0</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Current Enrolled Courses</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Progress Table (Matches StudentVUE Progress View) -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-indigo-600"></i> High School Credit & Graduation Progress
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Virginia Standard Diploma Requirement Tracking</p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs">
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-amber-500 inline-block"></span> In Progress</div>
+                        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span> Completed</div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                                <th class="p-3 w-1/3">Subject Area</th>
+                                <th class="p-3 w-1/6 text-center">Progress %</th>
+                                <th class="p-3">Requirement Progress Bar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditsTableBody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: ARCHIVED COURSES -->
+        <div id="tabContentArchive" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-box-archive text-amber-600"></i> Course Archive
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Past academic courses organized by school year</p>
+                </div>
+                <button onclick="openArchiveModal()" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-folder-plus"></i> Archive Current School Year
+                </button>
+            </div>
+            <div id="archiveContainer" class="space-y-4">
+                <!-- Injected dynamically -->
+            </div>
+        </div>
+
+        <!-- TAB: CALENDAR GRID -->
+        <div id="tabContentGrid" class="hidden space-y-6">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-calendar-days text-indigo-600"></i> LCPS Academic Calendar Grid
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Visual month grid of holidays, key quarter dates, workdays & custom student reminders</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeGridMonth(-1)" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs text-slate-700 transition">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <span id="gridMonthYearLabel" class="text-sm font-bold text-slate-800 min-w-[120px] text-center">October 2026</span>
+                        <button onclick="changeGridMonth(1)" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs text-slate-700 transition">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                        <button onclick="resetGridToToday()" class="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold rounded-xl text-xs transition ms-1">Today</button>
+                    </div>
+                </div>
+
+                <!-- Calendar View Selector Bar -->
+                <div class="flex justify-between items-center bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <div class="flex gap-1">
+                        <button onclick="setCalViewMode('day')" id="viewModeDay" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">Day</button>
+                        <button onclick="setCalViewMode('week')" id="viewModeWeek" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">Week</button>
+                        <button onclick="setCalViewMode('month')" id="viewModeMonth" class="px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm">Month</button>
+                        <button onclick="setCalViewMode('year')" id="viewModeYear" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition">Year</button>
+                    </div>
+                    <button onclick="openAddEventModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Add Event
+                    </button>
+                </div>
+
+                <div id="gridCalendarContainer">
+                    <!-- Days Header -->
+                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-400 py-2 border-b border-slate-100">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+                    <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 pt-2 min-h-[360px]">
+                        <!-- Injected dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: EVENT LIST -->
+        <div id="tabContentCalendar" class="hidden space-y-6">
+            <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 rounded-2xl p-6 text-white shadow-md relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 text-indigo-800/40 text-9xl font-bold">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+                <div class="relative z-10 space-y-2 max-w-xl">
+                    <span class="bg-indigo-500/40 text-indigo-200 text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full border border-indigo-400/30">Nearest Upcoming Event</span>
+                    <h3 id="nearestEventTitle" class="text-2xl font-black text-white">End of 1st Quarter</h3>
+                    <p id="nearestEventMeta" class="text-xs text-indigo-200 flex items-center gap-3 font-medium">
+                        <span><i class="fa-regular fa-calendar me-1"></i> Wednesday, October 28, 2026</span>
+                        <span id="nearestEventCountdown" class="bg-emerald-500/30 text-emerald-200 px-2 py-0.5 rounded text-[11px] font-bold">Today / Near</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4">
+                    <div class="flex items-center gap-3">
+                        <button onclick="switchCalSubTab('upcoming')" id="subTabUpcoming" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm">Upcoming Events</button>
+                        <button onclick="switchCalSubTab('older')" id="subTabOlder" class="px-4 py-2 rounded-xl text-xs font-bold transition text-slate-500 hover:text-slate-800">Older / Past Events</button>
+                    </div>
+                    <select id="calendarFilter" onchange="filterCalendar()" class="px-3 py-1.5 border border-slate-300 rounded-xl text-xs font-semibold bg-white focus:outline-none">
+                        <option value="all">All Event Types</option>
+                        <option value="quarter">Quarter Deadlines</option>
+                        <option value="holiday">Holidays & Breaks</option>
+                        <option value="workday">Teacher Workdays</option>
+                        <option value="reminder">Custom Reminders</option>
+                    </select>
+                </div>
+
+                <div id="calendarEventsList" class="space-y-2">
+                    <!-- Events injected dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Add Class Button Trigger for Grades Tab -->
+    <div id="bottomAddClassBanner" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+        <button onclick="openAddClassModal()" class="w-full py-3 bg-white hover:bg-slate-100 text-indigo-700 font-bold text-xs rounded-2xl border-2 border-dashed border-indigo-200 shadow-sm transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-circle-plus text-base text-indigo-600"></i> Add New Class to Enrolled List
+        </button>
+    </div>
+
+    <!-- Add / Edit Class Modal -->
+    <div id="modalAddClass" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 id="modalAddClassTitle" class="text-lg font-bold text-slate-900">Add New Class</h3>
+                <button type="button" onclick="closeAddClassModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="saveNewClass(event)" class="space-y-4">
+                <input type="hidden" id="editClassId" value="">
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Class Name <span class="text-rose-500">*</span></label>
+                    <input type="text" id="inputClassName" required placeholder="e.g. Algebra I" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Teacher Name</label>
+                    <input type="text" id="inputTeacherName" placeholder="e.g. Mrs. Davis" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">High School Credit Course?</label>
+                    <select id="inputClassHsCredit" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                        <option value="no">No (Standard Middle School Grade)</option>
+                        <option value="yes">Yes (Counts toward HS Graduation Credits & HS GPA)</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Subject Area</label>
+                        <select id="inputClassSubject" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                            <option value="Math">Math</option>
+                            <option value="English">English</option>
+                            <option value="Science">Science</option>
+                            <option value="History & Social Science">History & Social Science</option>
+                            <option value="World Language">World Language</option>
+                            <option value="Health and PE">Health and PE</option>
+                            <option value="CTE or Fine Arts">CTE or Fine Arts</option>
+                            <option value="Elective">Elective</option>
+                            <option value="Economics">Economics</option>
+                            <option value="Personal Finance">Personal Finance</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Class Duration</label>
+                        <select id="inputClassDuration" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+                            <option value="quarter">A Quarter (~9 weeks)</option>
+                            <option value="month">A Month (~4 weeks)</option>
+                            <option value="semester">A Semester (~18 weeks)</option>
+                            <option value="year" selected>A Full Year (36 weeks)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Notes / Description</label>
+                    <textarea id="inputClassNotes" rows="2" placeholder="e.g. Room 204, Meets Block 2, bring lab notebook..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddClassModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm transition">Save Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Grade Modal -->
+    <div id="modalAddGrade" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900">Add Grade</h3>
+                <button onclick="closeAddGradeModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="saveNewGrade(event)" class="space-y-4">
+                <input type="hidden" id="gradeClassId" value="">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Assignment Name</label>
+                    <input type="text" id="inputGradeTitle" required placeholder="e.g. Unit 3 Test" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Category</label>
+                    <select id="inputGradeCategory" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="summative">Major Summative (60%)</option>
+                        <option value="minor">Minor Assessment (30%)</option>
+                        <option value="formative">Formative (10%)</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Points Earned</label>
+                        <input type="number" step="0.5" id="inputGradeEarned" required placeholder="e.g. 18" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Total Points</label>
+                        <select id="inputGradeTotal" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <option value="5">5 pts</option>
+                            <option value="10">10 pts</option>
+                            <option value="20" selected>20 pts</option>
+                            <option value="50">50 pts</option>
+                            <option value="100">100 pts</option>
+                            <option value="200">200 pts</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddGradeModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-sm transition">Add Grade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="modalConfirmDelete" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-trash"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Delete Course?</h3>
+                <p class="text-xs text-slate-500">Are you sure you want to delete this course and all of its associated assignments? This cannot be undone.</p>
+            </div>
+            <input type="hidden" id="deleteTargetClassId" value="">
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeDeleteModal()" class="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
+                <button onclick="confirmDeleteClass()" class="w-1/2 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-sm transition">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Policy 5030 Modal -->
+    <div id="modalPolicy" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-indigo-600"></i> LCPS Policy 5030 Highlights
+                </h3>
+                <button onclick="closePolicyModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+                <p><strong class="text-slate-800">1. Category Weighting:</strong> Major Summative assessments are weighted at 60%, Minor Assessments at 30%, and Formative tasks at 10%.</p>
+                <p><strong class="text-slate-800">2. Summative Retake Rule:</strong> Students scoring below 70% on major summatives are eligible for a retake (grade capped at a max of 70%).</p>
+                <p><strong class="text-slate-800">3. Grading Scale & Quality Points:</strong></p>
+                <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono text-[11px]">
+                    <div>A+: 98-100 (4.3)</div>
+                    <div>A: 93-97 (4.0)</div>
+                    <div>A-: 90-92 (3.7)</div>
+                    <div>B+: 87-89 (3.3)</div>
+                    <div>B: 83-86 (3.0)</div>
+                    <div>B-: 80-82 (2.7)</div>
+                    <div>C+: 77-79 (2.3)</div>
+                    <div>C: 73-76 (2.0)</div>
+                    <div>C-: 70-72 (1.7)</div>
+                    <div>D+: 67-69 (1.3)</div>
+                    <div>D: 63-66 (1.0)</div>
+                    <div>D-: 60-62 (0.7)</div>
+                    <div>F: &lt;60 (0.0)</div>
+                </div>
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="closePolicyModal()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Calculator Modal -->
+    <div id="modalWhatIf" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900">What-If Goal Calculator</h3>
+                <button onclick="closeWhatIfModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Select Class</label>
+                    <select id="whatIfClassSelect" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Target Overall Grade (%)</label>
+                    <input type="number" id="whatIfTargetGrade" value="90" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Next Major Summative Worth (Points)</label>
+                    <input type="number" id="whatIfPoints" value="100" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <button onclick="calculateGoalScore()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-sm transition">Calculate Required Score</button>
+                <div id="whatIfResult" class="hidden p-3 bg-indigo-50 rounded-xl text-center text-xs text-indigo-900 font-semibold border border-indigo-100"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Year Confirmation Modal -->
+    <div id="modalArchiveYear" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-box-archive text-amber-600"></i> Archive School Year
+                </h3>
+                <button onclick="closeArchiveModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="confirmArchiveCurrentYear(event)" class="space-y-4">
+                <p class="text-xs text-slate-500">All current active courses will be saved and organized into the archive folder under this school year label.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">School Year Label <span class="text-rose-500">*</span></label>
+                    <input type="text" id="inputArchiveYearLabel" required placeholder="e.g. 2026-2027" value="2026-2027" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeArchiveModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-box-archive"></i> Save to Archive
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="modalSettings" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900">App Settings</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-xs">
+                <!-- County Grading Scale Selector -->
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">School District / Grading System</label>
+                    <select id="settingCountyPreset" onchange="handleCountyChange()" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-slate-50 font-semibold focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="lcps_standard">Loudoun County (LCPS) - 60% Major / 30% Minor / 10% Formative</option>
+                        <option value="lcps_policy5030">LCPS Classic (90% Summative / 10% Formative)</option>
+                        <option value="fcps_standard">Fairfax County (FCPS) - 80% Major / 20% Minor</option>
+                        <option value="pwcs_standard">Prince William County (PWCS) - 70% Major / 30% Minor</option>
+                        <option value="custom">Custom Weightings...</option>
+                    </select>
+                </div>
+
+                <div id="customWeightContainer" class="hidden grid grid-cols-3 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <div>
+                        <label class="block font-bold text-slate-700 text-[10px]">Major %</label>
+                        <input type="number" id="settingCustomSummative" value="60" onchange="applySettings()" class="w-full px-2 py-1 border border-slate-300 rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-[10px]">Minor %</label>
+                        <input type="number" id="settingCustomMinor" value="30" onchange="applySettings()" class="w-full px-2 py-1 border border-slate-300 rounded-lg text-xs">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 text-[10px]">Formative %</label>
+                        <input type="number" id="settingCustomFormative" value="10" onchange="applySettings()" class="w-full px-2 py-1 border border-slate-300 rounded-lg text-xs">
+                    </div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Brightness</label>
+                    <input type="range" id="settingBrightness" min="50" max="150" value="100" oninput="applySettings()" class="w-full">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Text Size</label>
+                    <select id="settingTextSize" onchange="applySettings()" class="w-full px-3 py-2 border border-slate-300 rounded-xl">
+                        <option value="normal">Normal</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">Extra Large</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-700">Invert Colors</span>
+                    <input type="checkbox" id="settingInvert" onchange="applySettings()" class="w-4 h-4 text-indigo-600 rounded">
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-700">Dark Mode</span>
+                    <input type="checkbox" id="settingDark" onchange="applySettings()" class="w-4 h-4 text-indigo-600 rounded">
+                </div>
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="closeSettingsModal()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-xl">Save & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign In / Account Modal -->
+    <div id="modalAuth" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 id="authModalTitle" class="text-lg font-bold text-slate-900">Sign In to Save Progress</h3>
+                <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="authSignedOutState" class="space-y-4">
+                <p class="text-xs text-slate-500">Log in or create a quick account profile to back up your courses, grades, and custom events across all your devices.</p>
+                <form onsubmit="handleUserSignIn(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Student Name / Username <span class="text-rose-500">*</span></label>
+                        <input type="text" id="inputAuthName" required placeholder="e.g. Alex Smith" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">School Email <span class="text-rose-500">*</span></label>
+                        <input type="email" id="inputAuthEmail" required placeholder="student@lcps.org" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    </div>
+                    <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Save & Connect Account
+                    </button>
+                </form>
+            </div>
+            <div id="authSignedInState" class="hidden space-y-4 text-center">
+                <div class="relative w-20 h-20 mx-auto">
+                    <div id="signedInAvatarBox" class="w-20 h-20 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-3xl font-bold overflow-hidden border-2 border-indigo-500 shadow-md">
+                        <i class="fa-solid fa-user" id="signedInAvatarIcon"></i>
+                        <img id="signedInAvatarImg" class="w-full h-full object-cover hidden" src="" alt="Profile">
+                    </div>
+                    <label for="inputAvatarUpload" class="absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 text-white p-1.5 rounded-full cursor-pointer shadow-md transition text-xs" title="Upload Custom Photo">
+                        <i class="fa-solid fa-camera"></i>
+                    </label>
+                    <input type="file" id="inputAvatarUpload" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                </div>
+
+                <!-- Avatar Selection Presets -->
+                <div class="space-y-1.5">
+                    <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider">Choose Avatar</label>
+                    <div class="flex justify-center items-center gap-2">
+                        <button onclick="selectPresetAvatar('🎓')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-sm flex items-center justify-center border border-slate-200 transition">🎓</button>
+                        <button onclick="selectPresetAvatar('🚀')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-sm flex items-center justify-center border border-slate-200 transition">🚀</button>
+                        <button onclick="selectPresetAvatar('⭐')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-sm flex items-center justify-center border border-slate-200 transition">⭐</button>
+                        <button onclick="selectPresetAvatar('🦊')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-sm flex items-center justify-center border border-slate-200 transition">🦊</button>
+                        <button onclick="selectPresetAvatar('⚽')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-indigo-100 text-sm flex items-center justify-center border border-slate-200 transition">⚽</button>
+                        <button onclick="clearAvatar()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-100 text-rose-600 text-xs flex items-center justify-center border border-slate-200 transition" title="Default User Icon"><i class="fa-solid fa-rotate-left"></i></button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 id="signedInUserName" class="text-base font-bold text-slate-900">Signed In</h4>
+                    <p id="signedInUserEmail" class="text-xs text-slate-500 mt-0.5"></p>
+                    <p class="text-[11px] text-emerald-600 font-semibold mt-2 flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Progress synced automatically
+                    </p>
+                </div>
+                <button onclick="handleUserSignOut()" class="w-full py-2 bg-slate-100 hover:bg-rose-50 text-rose-600 border border-slate-200 text-xs font-bold rounded-xl transition">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="modalAddEvent" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900">Add Custom Reminder</h3>
+                <button onclick="closeAddEventModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="saveCustomEvent(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Event Title</label>
+                    <input type="text" id="inputEventTitle" required placeholder="e.g. Science Fair Project Due" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Date</label>
+                    <input type="date" id="inputEventDate" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Type</label>
+                    <select id="inputEventType" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="reminder">Custom Reminder</option>
+                        <option value="quarter">Quarter Deadline</option>
+                        <option value="holiday">Holiday</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeAddEventModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-sm transition">Add Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Share Event Modal -->
+    <div id="modalShareEvent" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-share-nodes text-indigo-600"></i> Share Event
+                </h3>
+                <button onclick="closeShareModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <h4 id="shareEventTitle" class="font-bold text-slate-900 text-sm"></h4>
+                    <p id="shareEventDate" class="text-xs text-slate-500 mt-0.5"></p>
+                </div>
+
+                <!-- Google Calendar Link Button -->
+                <a id="shareGCalBtn" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+                    <i class="fa-brands fa-google text-rose-500 text-sm"></i> Add directly to Google Calendar
+                </a>
+
+                <!-- Download ICS Calendar File -->
+                <button onclick="downloadIcsFile()" class="w-full py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-export"></i> Download iCal / Outlook File (.ics)
+                </button>
+
+                <!-- Copy Share Text / Link -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Copy Event Invite Text</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="shareCopyInput" readonly class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-600 focus:outline-none">
+                        <button onclick="copyShareText()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shrink-0">
+                            <i class="fa-solid fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="shareCopyAlert" class="hidden text-center text-xs font-bold text-emerald-600 bg-emerald-50 py-2 rounded-lg border border-emerald-100 fade-in">
+                <i class="fa-solid fa-circle-check"></i> Copied to clipboard!
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // Sample default data
+        const initialClasses = [
+            {
+                id: 'c1',
+                name: 'Algebra I',
+                teacher: 'Mrs. Davis',
+                isHsCredit: 'yes',
+                subject: 'Math',
+                duration: 'year',
+                notes: 'Honors credit bearing math course.',
+                startDate: '2026-08-17',
+                grades: [
+                    { id: 'g1', title: 'Unit 1 Test', category: 'summative', earned: 92, total: 100 },
+                    { id: 'g2', title: 'Equations Quiz', category: 'minor', earned: 18, total: 20 },
+                    { id: 'g3', title: 'HW 1.2', category: 'formative', earned: 10, total: 10 }
+                ]
+            },
+            {
+                id: 'c2',
+                name: 'Spanish I',
+                teacher: 'Señora Gomez',
+                isHsCredit: 'yes',
+                subject: 'World Language',
+                duration: 'year',
+                notes: 'High school world language credit.',
+                startDate: '2026-08-17',
+                grades: [
+                    { id: 'g4', title: 'Vocab Quiz 1', category: 'minor', earned: 20, total: 20 },
+                    { id: 'g5', title: 'Speaking Exam', category: 'summative', earned: 95, total: 100 }
+                ]
+            },
+            {
+                id: 'c3',
+                name: 'Life Science',
+                teacher: 'Mr. Harrison',
+                isHsCredit: 'no',
+                subject: 'Science',
+                duration: 'year',
+                notes: 'Lab safety equipment required.',
+                startDate: '2026-08-17',
+                grades: [
+                    { id: 'g6', title: 'Cell Structure Exam', category: 'summative', earned: 84, total: 100 },
+                    { id: 'g7', title: 'Microscope Lab', category: 'minor', earned: 19, total: 20 }
+                ]
+            }
+        ];
+
+        const defaultLcpsEvents = [
+            { id: 'e1', title: 'First Day of School', date: '2026-08-17', category: 'quarter' },
+            { id: 'e2', title: 'Labor Day (No School)', date: '2026-09-07', category: 'holiday' },
+            { id: 'e3', title: 'End of 1st Quarter', date: '2026-10-28', category: 'quarter' },
+            { id: 'e4', title: 'Teacher Workday (No School)', date: '2026-10-29', category: 'workday' },
+            { id: 'e5', title: 'Thanksgiving Break', date: '2026-11-25', category: 'holiday' },
+            { id: 'e6', title: 'Winter Break Starts', date: '2026-12-21', category: 'holiday' },
+            { id: 'e7', title: 'End of 2nd Quarter', date: '2027-01-22', category: 'quarter' },
+            { id: 'e8', title: 'Spring Break Starts', date: '2027-03-22', category: 'holiday' },
+            { id: 'e9', title: 'Last Day of School', date: '2027-06-11', category: 'quarter' }
+        ];
+
+        let state = {
+            classes: JSON.parse(localStorage.getItem('lcps_classes')) || initialClasses,
+            archives: JSON.parse(localStorage.getItem('lcps_archives')) || [],
+            customEvents: JSON.parse(localStorage.getItem('lcps_events')) || [],
+            user: JSON.parse(localStorage.getItem('lcps_user')) || null,
+            countyPreset: localStorage.getItem('lcps_county') || 'lcps_standard',
+            weights: JSON.parse(localStorage.getItem('lcps_weights')) || { summative: 0.60, minor: 0.30, formative: 0.10 },
+            activeTab: 'grades',
+            calSubTab: 'upcoming',
+            calViewMode: 'month',
+            currentGridDate: new Date(2026, 9, 1),
+            activeShareEvent: null
+        };
+
+        // Initialize App
+        window.onload = function() {
+            checkAndAutoArchive();
+            updateAuthUI();
+            applyCountyPresetUI();
+            renderClasses();
+            renderArchives();
+            renderCreditsTab();
+            renderCalendarEvents();
+            renderGridCalendar();
+        };
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+
+            const tabs = {
+                grades: document.getElementById('tabContentGrades'),
+                credits: document.getElementById('tabContentCredits'),
+                archive: document.getElementById('tabContentArchive'),
+                grid: document.getElementById('tabContentGrid'),
+                calendar: document.getElementById('tabContentCalendar')
+            };
+
+            const buttons = {
+                grades: document.getElementById('tabBtnGrades'),
+                credits: document.getElementById('tabBtnCredits'),
+                archive: document.getElementById('tabBtnArchive'),
+                grid: document.getElementById('tabBtnGrid'),
+                calendar: document.getElementById('tabBtnCalendar')
+            };
+
+            const actionAddClass = document.getElementById('actionBtnAddClass');
+            const actionAddEvent = document.getElementById('actionBtnAddEvent');
+            const bottomAddClassBanner = document.getElementById('bottomAddClassBanner');
+
+            Object.keys(tabs).forEach(key => {
+                if (tabs[key]) {
+                    if (key === tabId) {
+                        tabs[key].classList.remove('hidden');
+                    } else {
+                        tabs[key].classList.add('hidden');
+                    }
+                }
+
+                if (buttons[key]) {
+                    if (key === tabId) {
+                        buttons[key].className = "px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 bg-indigo-600 text-white shadow-sm whitespace-nowrap";
+                    } else {
+                        buttons[key].className = "px-4 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-2 text-indigo-200 hover:text-white whitespace-nowrap";
+                    }
+                }
+            });
+
+            if (actionAddClass && actionAddEvent) {
+                if (tabId === 'grid' || tabId === 'calendar') {
+                    actionAddClass.classList.add('hidden');
+                    actionAddEvent.classList.remove('hidden');
+                } else {
+                    actionAddClass.classList.remove('hidden');
+                    actionAddEvent.classList.add('hidden');
+                }
+            }
+
+            if (bottomAddClassBanner) {
+                if (tabId === 'grades') {
+                    bottomAddClassBanner.classList.remove('hidden');
+                } else {
+                    bottomAddClassBanner.classList.add('hidden');
+                }
+            }
+        }
+
+        // Calendar Sub-Tab Switcher
+        function switchCalSubTab(subTab) {
+            state.calSubTab = subTab;
+            const btnUpcoming = document.getElementById('subTabUpcoming');
+            const btnOlder = document.getElementById('subTabOlder');
+
+            if (subTab === 'upcoming') {
+                if (btnUpcoming) btnUpcoming.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm";
+                if (btnOlder) btnOlder.className = "px-4 py-2 rounded-xl text-xs font-bold transition text-slate-500 hover:text-slate-800";
+            } else {
+                if (btnUpcoming) btnUpcoming.className = "px-4 py-2 rounded-xl text-xs font-bold transition text-slate-500 hover:text-slate-800";
+                if (btnOlder) btnOlder.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-indigo-600 text-white shadow-sm";
+            }
+
+            renderCalendarEvents();
+        }
+
+        // Calendar View Mode Selector (Day, Week, Month, Year)
+        function setCalViewMode(mode) {
+            state.calViewMode = mode;
+            ['Day', 'Week', 'Month', 'Year'].forEach(m => {
+                const btn = document.getElementById('viewMode' + m);
+                if (btn) {
+                    if (m.toLowerCase() === mode) {
+                        btn.className = "px-3 py-1 rounded-lg text-xs font-semibold bg-indigo-600 text-white shadow-sm";
+                    } else {
+                        btn.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition";
+                    }
+                }
+            });
+            renderGridCalendar();
+        }
+
+        // Grid Calendar Controls
+        function changeGridMonth(offset) {
+            state.currentGridDate.setMonth(state.currentGridDate.getMonth() + offset);
+            renderGridCalendar();
+        }
+
+        function resetGridToToday() {
+            state.currentGridDate = new Date();
+            renderGridCalendar();
+        }
+
+        // Render Calendar Month Grid
+        function renderGridCalendar() {
+            const gridContainer = document.getElementById('calendarDaysGrid');
+            const monthYearLabel = document.getElementById('gridMonthYearLabel');
+            if (!gridContainer || !monthYearLabel) return;
+
+            const year = state.currentGridDate.getFullYear();
+            const month = state.currentGridDate.getMonth();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            monthYearLabel.textContent = `${monthNames[month]} ${year}`;
+
+            gridContainer.innerHTML = '';
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const allEvents = [...defaultLcpsEvents, ...state.customEvents];
+
+            // Render empty padding days
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = "bg-slate-50/50 rounded-xl p-1 border border-slate-100 min-h-[70px]";
+                gridContainer.appendChild(emptyCell);
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            // Render month days
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const dayEvents = allEvents.filter(e => e.date === dayStr);
+
+                const dayCell = document.createElement('div');
+                const isToday = dayStr === todayStr;
+
+                dayCell.className = `rounded-xl p-1.5 border min-h-[70px] flex flex-col justify-between text-xs transition ${isToday ? 'bg-indigo-50/80 border-indigo-400 font-bold' : 'bg-white border-slate-200 hover:border-indigo-300'}`;
+                
+                let eventsPills = dayEvents.map(e => {
+                    let badgeBg = 'bg-indigo-100 text-indigo-700';
+                    if (e.category === 'holiday') badgeBg = 'bg-amber-100 text-amber-800';
+                    if (e.category === 'workday') badgeBg = 'bg-blue-100 text-blue-800';
+                    if (e.category === 'reminder') badgeBg = 'bg-emerald-100 text-emerald-800';
+
+                    return `
+                        <div onclick="openShareModal('${e.id}')" class="text-[9px] ${badgeBg} truncate font-semibold px-1.5 py-0.5 rounded border border-black/5 cursor-pointer hover:opacity-80 transition" title="${e.title}">
+                            ${e.title}
+                        </div>
+                    `;
+                }).join('');
+
+                dayCell.innerHTML = `
+                    <div class="flex justify-between items-center text-[11px] text-slate-500">
+                        <span class="${isToday ? 'bg-indigo-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-bold text-[10px]' : ''}">${d}</span>
+                    </div>
+                    <div class="space-y-1 mt-1">
+                        ${eventsPills}
+                    </div>
+                `;
+                gridContainer.appendChild(dayCell);
+            }
+        }
+
+        // Render Calendar Event List Tab
+        function filterCalendar() { renderCalendarEvents(); }
+
+        function renderCalendarEvents() {
+            const container = document.getElementById('calendarEventsList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const filterVal = document.getElementById('calendarFilter')?.value || 'all';
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            let allEvents = [...defaultLcpsEvents, ...state.customEvents];
+
+            if (filterVal !== 'all') {
+                allEvents = allEvents.filter(e => e.category === filterVal);
+            }
+
+            allEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const upcomingEvents = allEvents.filter(e => e.date >= todayStr);
+            const pastEvents = allEvents.filter(e => e.date < todayStr);
+
+            // Update top hero banner with nearest upcoming event
+            if (upcomingEvents.length > 0) {
+                const nearest = upcomingEvents[0];
+                document.getElementById('nearestEventTitle').textContent = nearest.title;
+                const dObj = new Date(nearest.date + 'T00:00:00');
+                document.getElementById('nearestEventMeta').innerHTML = `
+                    <span><i class="fa-regular fa-calendar me-1"></i> ${dObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                `;
+            }
+
+            const eventsToDisplay = state.calSubTab === 'upcoming' ? upcomingEvents : pastEvents;
+
+            if (eventsToDisplay.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic text-center py-6">No events found in this view.</p>`;
+                return;
+            }
+
+            eventsToDisplay.forEach(e => {
+                const dObj = new Date(e.date + 'T00:00:00');
+                const formattedDate = dObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+                let catBadge = `<span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[10px] uppercase">Quarter</span>`;
+                if (e.category === 'holiday') catBadge = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[10px] uppercase">Holiday</span>`;
+                if (e.category === 'workday') catBadge = `<span class="bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded text-[10px] uppercase">Teacher Workday</span>`;
+                if (e.category === 'reminder') catBadge = `<span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px] uppercase">Reminder</span>`;
+
+                const row = document.createElement('div');
+                row.className = "flex justify-between items-center bg-slate-50 hover:bg-slate-100/80 p-3 rounded-xl border border-slate-200 transition text-xs";
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-white border border-slate-200 flex flex-col items-center justify-center text-[10px] font-bold text-slate-700 shadow-sm">
+                            <span class="text-indigo-600 leading-none uppercase">${dObj.toLocaleDateString('en-US', { month: 'short' })}</span>
+                            <span class="text-sm leading-none mt-0.5">${dObj.getDate()}</span>
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-800 text-sm">${e.title}</div>
+                            <div class="text-[10px] text-slate-400 flex items-center gap-2 mt-0.5">
+                                <span>${formattedDate}</span>
+                                ${catBadge}
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="openShareModal('${e.id}')" class="px-3 py-1.5 bg-white hover:bg-indigo-50 text-indigo-700 font-semibold border border-indigo-200 rounded-lg transition text-xs flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-share-nodes"></i> Share
+                    </button>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // Add Custom Event Logic
+        function openAddEventModal() {
+            document.getElementById('inputEventTitle').value = '';
+            document.getElementById('inputEventDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modalAddEvent').classList.remove('hidden');
+        }
+
+        function closeAddEventModal() {
+            document.getElementById('modalAddEvent').classList.add('hidden');
+        }
+
+        function saveCustomEvent(e) {
+            e.preventDefault();
+            const title = document.getElementById('inputEventTitle').value.trim();
+            const date = document.getElementById('inputEventDate').value;
+            const category = document.getElementById('inputEventType').value;
+
+            if (title && date) {
+                state.customEvents.push({
+                    id: 'evt_' + Date.now(),
+                    title,
+                    date,
+                    category
+                });
+                saveData();
+                renderCalendarEvents();
+                renderGridCalendar();
+                closeAddEventModal();
+            }
+        }
+
+        // Share Event Modal Logic
+        function openShareModal(eventId) {
+            const allEvents = [...defaultLcpsEvents, ...state.customEvents];
+            const evt = allEvents.find(e => e.id === eventId);
+            if (!evt) return;
+
+            state.activeShareEvent = evt;
+
+            const dObj = new Date(evt.date + 'T00:00:00');
+            const dateStr = dObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+            document.getElementById('shareEventTitle').textContent = evt.title;
+            document.getElementById('shareEventDate').textContent = dateStr;
+
+            const inviteText = `LCPS School Event: ${evt.title} on ${dateStr}`;
+            document.getElementById('shareCopyInput').value = inviteText;
+
+            // Google Calendar Direct Link format
+            const startTime = evt.date.replace(/-/g, '') + 'T090000Z';
+            const endTime = evt.date.replace(/-/g, '') + 'T150000Z';
+            const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evt.title)}&dates=${startTime}/${endTime}&details=${encodeURIComponent('LCPS Academic Calendar Event')}`;
+            document.getElementById('shareGCalBtn').href = gCalUrl;
+
+            document.getElementById('modalShareEvent').classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            document.getElementById('modalShareEvent').classList.add('hidden');
+            const alertBox = document.getElementById('shareCopyAlert');
+            if (alertBox) alertBox.classList.add('hidden');
+        }
+
+        function copyShareText() {
+            const input = document.getElementById('shareCopyInput');
+            input.select();
+            document.execCommand('copy');
+
+            const alertBox = document.getElementById('shareCopyAlert');
+            if (alertBox) alertBox.classList.remove('hidden');
+        }
+
+        function downloadIcsFile() {
+            if (!state.activeShareEvent) return;
+            const evt = state.activeShareEvent;
+            const dateClean = evt.date.replace(/-/g, '');
+            const icsContent = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${evt.title}\nDTSTART:${dateClean}\nDTEND:${dateClean}\nDESCRIPTION:LCPS Academic Calendar Event\nEND:VEVENT\nEND:VCALENDAR`;
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', `${evt.title.replace(/\s+/g, '_')}.ics`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // What-If Goal Calculator Modal Logic
+        function openWhatIfModal() {
+            const select = document.getElementById('whatIfClassSelect');
+            if (!select) return;
+            select.innerHTML = '';
+            state.classes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.textContent = c.name;
+                select.appendChild(opt);
+            });
+            document.getElementById('whatIfResult').classList.add('hidden');
+            document.getElementById('modalWhatIf').classList.remove('hidden');
+        }
+
+        function closeWhatIfModal() {
+            document.getElementById('modalWhatIf').classList.add('hidden');
+        }
+
+        function calculateGoalScore() {
+            const classId = document.getElementById('whatIfClassSelect').value;
+            const targetGrade = Number(document.getElementById('whatIfTargetGrade').value);
+            const pointsTotal = Number(document.getElementById('whatIfPoints').value);
+            const resultBox = document.getElementById('whatIfResult');
+
+            const targetClass = state.classes.find(c => c.id === classId);
+            if (!targetClass || isNaN(targetGrade) || isNaN(pointsTotal)) return;
+
+            // Simple estimation for next summative grade
+            const currentCalc = calculateClassGrade(targetClass);
+            const currentPct = currentCalc.percent !== null ? currentCalc.percent : 100;
+
+            const neededScore = Math.round((targetGrade - (currentPct * 0.4)) / 0.6 * (pointsTotal / 100));
+
+            resultBox.innerHTML = `To reach an overall <strong>${targetGrade}%</strong> in ${targetClass.name}, you need approximately <strong>${neededScore} / ${pointsTotal} points</strong> (${Math.round((neededScore / pointsTotal) * 100)}%) on your next major summative.`;
+            resultBox.classList.remove('hidden');
+        }
+
+        // User Auth / Account Modal Logic
+        function openAuthModal() {
+            document.getElementById('modalAuth').classList.remove('hidden');
+            updateAuthUI();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('modalAuth').classList.add('hidden');
+        }
+
+        function handleUserSignIn(e) {
+            e.preventDefault();
+            const name = document.getElementById('inputAuthName').value.trim();
+            const email = document.getElementById('inputAuthEmail').value.trim();
+
+            if (!name || !email) return;
+
+            state.user = {
+                name: name,
+                email: email,
+                avatar: state.user && state.user.avatar ? state.user.avatar : { type: 'icon', value: 'user' }
+            };
+
+            saveData();
+            updateAuthUI();
+            closeAuthModal();
+        }
+
+        function handleUserSignOut() {
+            state.user = null;
+            saveData();
+            updateAuthUI();
+        }
+
+        function selectPresetAvatar(emoji) {
+            if (!state.user) {
+                state.user = { name: 'Student User', email: 'student@lcps.org' };
+            }
+            state.user.avatar = { type: 'emoji', value: emoji };
+            saveData();
+            updateAuthUI();
+        }
+
+        function clearAvatar() {
+            if (state.user) {
+                state.user.avatar = { type: 'icon', value: 'user' };
+                saveData();
+                updateAuthUI();
+            }
+        }
+
+        function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                if (!state.user) {
+                    state.user = { name: 'Student User', email: 'student@lcps.org' };
+                }
+                state.user.avatar = { type: 'image', value: evt.target.result };
+                saveData();
+                updateAuthUI();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateAuthUI() {
+            const authSignedOut = document.getElementById('authSignedOutState');
+            const authSignedIn = document.getElementById('authSignedInState');
+            const userLabel = document.getElementById('userAuthLabel');
+            const headerAvatarImg = document.getElementById('userAvatarImg');
+            const headerAvatarIcon = document.getElementById('userAvatarIcon');
+
+            const signedInName = document.getElementById('signedInUserName');
+            const signedInEmail = document.getElementById('signedInUserEmail');
+            const modalImg = document.getElementById('signedInAvatarImg');
+            const modalIcon = document.getElementById('signedInAvatarIcon');
+
+            if (state.user) {
+                if (authSignedOut) authSignedOut.classList.add('hidden');
+                if (authSignedIn) authSignedIn.classList.remove('hidden');
+                if (userLabel) userLabel.textContent = state.user.name.split(' ')[0];
+                if (signedInName) signedInName.textContent = state.user.name;
+                if (signedInEmail) signedInEmail.textContent = state.user.email;
+
+                const avatar = state.user.avatar || { type: 'icon', value: 'user' };
+
+                if (avatar.type === 'image') {
+                    if (headerAvatarImg) {
+                        headerAvatarImg.src = avatar.value;
+                        headerAvatarImg.classList.remove('hidden');
+                    }
+                    if (headerAvatarIcon) headerAvatarIcon.classList.add('hidden');
+
+                    if (modalImg) {
+                        modalImg.src = avatar.value;
+                        modalImg.classList.remove('hidden');
+                    }
+                    if (modalIcon) modalIcon.classList.add('hidden');
+                } else {
+                    if (headerAvatarImg) headerAvatarImg.classList.add('hidden');
+                    if (headerAvatarIcon) headerAvatarIcon.classList.remove('hidden');
+
+                    if (modalImg) modalImg.classList.add('hidden');
+                    if (modalIcon) modalIcon.classList.remove('hidden');
+                }
+            } else {
+                if (authSignedOut) authSignedOut.classList.remove('hidden');
+                if (authSignedIn) authSignedIn.classList.add('hidden');
+                if (userLabel) userLabel.textContent = 'Sign In';
+                if (headerAvatarImg) headerAvatarImg.classList.add('hidden');
+                if (headerAvatarIcon) headerAvatarIcon.classList.remove('hidden');
+            }
+        }
+
+        // County & Weightings Handler
+        function handleCountyChange() {
+            const preset = document.getElementById('settingCountyPreset').value;
+            const customContainer = document.getElementById('customWeightContainer');
+            state.countyPreset = preset;
+
+            if (preset === 'lcps_standard') {
+                state.weights = { summative: 0.60, minor: 0.30, formative: 0.10 };
+                if (customContainer) customContainer.classList.add('hidden');
+            } else if (preset === 'lcps_policy5030') {
+                state.weights = { summative: 0.90, minor: 0.00, formative: 0.10 };
+                if (customContainer) customContainer.classList.add('hidden');
+            } else if (preset === 'fcps_standard') {
+                state.weights = { summative: 0.80, minor: 0.20, formative: 0.00 };
+                if (customContainer) customContainer.classList.add('hidden');
+            } else if (preset === 'pwcs_standard') {
+                state.weights = { summative: 0.70, minor: 0.30, formative: 0.00 };
+                if (customContainer) customContainer.classList.add('hidden');
+            } else {
+                if (customContainer) customContainer.classList.remove('hidden');
+            }
+
+            applyCountyPresetUI();
+            saveData();
+            renderClasses();
+        }
+
+        function applyCountyPresetUI() {
+            const countyLabel = document.getElementById('countyNameLabel');
+            const weightLabel = document.getElementById('countyWeightLabel');
+
+            const sumPct = Math.round(state.weights.summative * 100);
+            const minPct = Math.round((state.weights.minor || 0) * 100);
+            const formPct = Math.round((state.weights.formative || 0) * 100);
+
+            if (weightLabel) {
+                let parts = [];
+                if (sumPct > 0) parts.push(`${sumPct}% Major`);
+                if (minPct > 0) parts.push(`${minPct}% Minor`);
+                if (formPct > 0) parts.push(`${formPct}% Form`);
+                weightLabel.textContent = parts.join(' / ');
+            }
+
+            if (countyLabel) {
+                if (state.countyPreset === 'lcps_standard') countyLabel.textContent = 'Loudoun County (LCPS Standard)';
+                else if (state.countyPreset === 'lcps_policy5030') countyLabel.textContent = 'Loudoun County (Policy 5030 Classic)';
+                else if (state.countyPreset === 'fcps_standard') countyLabel.textContent = 'Fairfax County (FCPS Standard)';
+                else if (state.countyPreset === 'pwcs_standard') countyLabel.textContent = 'Prince William County (PWCS)';
+                else countyLabel.textContent = 'Custom Weighting Scale';
+            }
+        }
+
+        // Grade Calculation Logic with Dynamic Renormalization
+        function calculateClassGrade(classObj) {
+            if (!classObj.grades || classObj.grades.length === 0) {
+                return { percent: null, letter: 'N/A', gpa: 0 };
+            }
+
+            const catTotals = {
+                summative: { earned: 0, total: 0 },
+                minor: { earned: 0, total: 0 },
+                formative: { earned: 0, total: 0 }
+            };
+
+            classObj.grades.forEach(g => {
+                const cat = g.category || 'summative';
+                if (catTotals[cat]) {
+                    catTotals[cat].earned += Number(g.earned);
+                    catTotals[cat].total += Number(g.total);
+                }
+            });
+
+            let weightedSum = 0;
+            let weightUsedSum = 0;
+
+            Object.keys(catTotals).forEach(cat => {
+                if (catTotals[cat].total > 0) {
+                    const catScore = catTotals[cat].earned / catTotals[cat].total;
+                    const catWeight = state.weights[cat] || 0;
+                    weightedSum += catScore * catWeight;
+                    weightUsedSum += catWeight;
+                }
+            });
+
+            if (weightUsedSum === 0) return { percent: null, letter: 'N/A', gpa: 0 };
+
+            const finalPercent = Math.round((weightedSum / weightUsedSum) * 100);
+            const letterGpa = getLetterGradeAndGpa(finalPercent);
+
+            return { percent: finalPercent, letter: letterGpa.letter, gpa: letterGpa.gpa };
+        }
+
+        function getLetterGradeAndGpa(pct) {
+            if (pct >= 98) return { letter: 'A+', gpa: 4.3 };
+            if (pct >= 93) return { letter: 'A', gpa: 4.0 };
+            if (pct >= 90) return { letter: 'A-', gpa: 3.7 };
+            if (pct >= 87) return { letter: 'B+', gpa: 3.3 };
+            if (pct >= 83) return { letter: 'B', gpa: 3.0 };
+            if (pct >= 80) return { letter: 'B-', gpa: 2.7 };
+            if (pct >= 77) return { letter: 'C+', gpa: 2.3 };
+            if (pct >= 73) return { letter: 'C', gpa: 2.0 };
+            if (pct >= 70) return { letter: 'C-', gpa: 1.7 };
+            if (pct >= 67) return { letter: 'D+', gpa: 1.3 };
+            if (pct >= 63) return { letter: 'D', gpa: 1.0 };
+            if (pct >= 60) return { letter: 'D-', gpa: 0.7 };
+            return { letter: 'F', gpa: 0.0 };
+        }
+
+        // Add / Remove Grade Handlers
+        function openAddGradeModal(classId) {
+            document.getElementById('gradeClassId').value = classId;
+            document.getElementById('inputGradeTitle').value = '';
+            document.getElementById('inputGradeEarned').value = '';
+            document.getElementById('modalAddGrade').classList.remove('hidden');
+        }
+
+        function closeAddGradeModal() {
+            document.getElementById('modalAddGrade').classList.add('hidden');
+        }
+
+        function saveNewGrade(e) {
+            e.preventDefault();
+            const classId = document.getElementById('gradeClassId').value;
+            const title = document.getElementById('inputGradeTitle').value.trim();
+            const category = document.getElementById('inputGradeCategory').value;
+            const earned = Number(document.getElementById('inputGradeEarned').value);
+            const total = Number(document.getElementById('inputGradeTotal').value);
+
+            const targetClass = state.classes.find(c => c.id === classId);
+            if (targetClass && title && !isNaN(earned) && !isNaN(total)) {
+                targetClass.grades.push({
+                    id: 'g_' + Date.now(),
+                    title,
+                    category,
+                    earned,
+                    total
+                });
+                saveData();
+                renderClasses();
+                closeAddGradeModal();
+            }
+        }
+
+        function deleteGrade(classId, gradeId) {
+            const targetClass = state.classes.find(c => c.id === classId);
+            if (targetClass) {
+                targetClass.grades = targetClass.grades.filter(g => g.id !== gradeId);
+                saveData();
+                renderClasses();
+            }
+        }
+
+        // Delete Course Handlers
+        function openDeleteModal(classId) {
+            document.getElementById('deleteTargetClassId').value = classId;
+            document.getElementById('modalConfirmDelete').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('modalConfirmDelete').classList.add('hidden');
+        }
+
+        function confirmDeleteClass() {
+            const classId = document.getElementById('deleteTargetClassId').value;
+            state.classes = state.classes.filter(c => c.id !== classId);
+            saveData();
+            renderClasses();
+            closeDeleteModal();
+        }
+
+        // Settings & Policy Modals
+        function openSettingsModal() { document.getElementById('modalSettings').classList.remove('hidden'); }
+        function closeSettingsModal() { document.getElementById('modalSettings').classList.add('hidden'); }
+
+        function applySettings() {
+            const brightness = document.getElementById('settingBrightness').value;
+            const textSize = document.getElementById('settingTextSize').value;
+            const invert = document.getElementById('settingInvert').checked;
+            const dark = document.getElementById('settingDark').checked;
+
+            let filterStr = `brightness(${brightness}%)`;
+            if (invert) filterStr += ' invert(100%)';
+            document.body.style.filter = filterStr;
+
+            if (textSize === 'large') document.body.style.fontSize = '18px';
+            else if (textSize === 'xlarge') document.body.style.fontSize = '20px';
+            else document.body.style.fontSize = '16px';
+
+            if (dark) {
+                document.body.classList.add('bg-slate-900', 'text-slate-100');
+            } else {
+                document.body.classList.remove('bg-slate-900', 'text-slate-100');
+            }
+        }
+
+        function openPolicyModal() { document.getElementById('modalPolicy').classList.remove('hidden'); }
+        function closePolicyModal() { document.getElementById('modalPolicy').classList.add('hidden'); }
+
+        // Automatic Archiving Check based on Duration
+        function checkAndAutoArchive() {
+            const today = new Date();
+            const activeToKeep = [];
+            let newlyArchivedCount = 0;
+
+            state.classes.forEach(c => {
+                const duration = c.duration || 'year';
+                const createdDate = c.startDate ? new Date(c.startDate) : new Date(2026, 7, 17);
+                let isExpired = false;
+
+                if (duration === 'month') {
+                    const monthLater = new Date(createdDate);
+                    monthLater.setDate(monthLater.getDate() + 30);
+                    if (today >= monthLater) isExpired = true;
+                } else if (duration === 'quarter') {
+                    const q1End = new Date('2026-10-28');
+                    if (today > q1End) isExpired = true;
+                } else if (duration === 'semester') {
+                    const sem1End = new Date('2027-01-22');
+                    if (today > sem1End) isExpired = true;
+                } else if (duration === 'year') {
+                    const yearEnd = new Date('2027-06-11');
+                    if (today > yearEnd) isExpired = true;
+                }
+
+                if (isExpired) {
+                    newlyArchivedCount++;
+                    const archYear = createdDate.getFullYear() + '-' + (createdDate.getFullYear() + 1);
+                    archiveSingleCourse(c, archYear, 'Auto-archived (Term Completed)');
+                } else {
+                    activeToKeep.push(c);
+                }
+            });
+
+            if (newlyArchivedCount > 0) {
+                state.classes = activeToKeep;
+                saveData();
+            }
+        }
+
+        function archiveSingleCourse(courseObj, yearLabel, reason = 'Term Completed') {
+            let existingYearArchive = state.archives.find(a => a.year === yearLabel);
+            if (!existingYearArchive) {
+                existingYearArchive = {
+                    id: 'arch_' + Date.now() + Math.random().toString(36).substring(2, 5),
+                    year: yearLabel,
+                    date: new Date().toLocaleDateString(),
+                    classes: []
+                };
+                state.archives.unshift(existingYearArchive);
+            }
+            courseObj.archivedReason = reason;
+            existingYearArchive.classes.push(courseObj);
+        }
+
+        // Add/Edit Class Modal Logic
+        function openAddClassModal(classId = null) {
+            const modal = document.getElementById('modalAddClass');
+            const titleEl = document.getElementById('modalAddClassTitle');
+            const editIdInput = document.getElementById('editClassId');
+            const nameInput = document.getElementById('inputClassName');
+            const teacherInput = document.getElementById('inputTeacherName');
+            const hsCreditInput = document.getElementById('inputClassHsCredit');
+            const subjectInput = document.getElementById('inputClassSubject');
+            const durationInput = document.getElementById('inputClassDuration');
+            const notesInput = document.getElementById('inputClassNotes');
+
+            if (!modal) return;
+
+            if (classId) {
+                const targetClass = state.classes.find(c => c.id === classId);
+                if (targetClass) {
+                    if (titleEl) titleEl.textContent = 'Edit Class';
+                    if (editIdInput) editIdInput.value = targetClass.id;
+                    if (nameInput) nameInput.value = targetClass.name;
+                    if (teacherInput) teacherInput.value = targetClass.teacher || '';
+                    if (hsCreditInput) hsCreditInput.value = targetClass.isHsCredit || 'no';
+                    if (subjectInput) subjectInput.value = targetClass.subject || 'Math';
+                    if (durationInput) durationInput.value = targetClass.duration || 'year';
+                    if (notesInput) notesInput.value = targetClass.notes || '';
+                }
+            } else {
+                if (titleEl) titleEl.textContent = 'Add New Class';
+                if (editIdInput) editIdInput.value = '';
+                if (nameInput) nameInput.value = '';
+                if (teacherInput) teacherInput.value = '';
+                if (hsCreditInput) hsCreditInput.value = 'no';
+                if (subjectInput) subjectInput.value = 'Math';
+                if (durationInput) durationInput.value = 'year';
+                if (notesInput) notesInput.value = '';
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeAddClassModal() {
+            const modal = document.getElementById('modalAddClass');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function saveNewClass(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editClassId').value;
+            const name = document.getElementById('inputClassName').value.trim();
+            const teacher = document.getElementById('inputTeacherName').value.trim();
+            const isHsCredit = document.getElementById('inputClassHsCredit').value;
+            const subject = document.getElementById('inputClassSubject').value;
+            const duration = document.getElementById('inputClassDuration').value;
+            const notes = document.getElementById('inputClassNotes').value.trim();
+
+            if (!name) return;
+
+            if (editId) {
+                const targetClass = state.classes.find(c => c.id === editId);
+                if (targetClass) {
+                    targetClass.name = name;
+                    targetClass.teacher = teacher;
+                    targetClass.isHsCredit = isHsCredit;
+                    targetClass.subject = subject;
+                    targetClass.duration = duration;
+                    targetClass.notes = notes;
+                }
+            } else {
+                state.classes.push({
+                    id: 'c_' + Date.now(),
+                    name,
+                    teacher,
+                    isHsCredit,
+                    subject,
+                    duration,
+                    notes,
+                    startDate: new Date().toISOString().split('T')[0],
+                    grades: []
+                });
+            }
+
+            saveData();
+            renderClasses();
+            renderCreditsTab();
+            closeAddClassModal();
+        }
+
+        // Render Active Classes Card Grid
+        function renderClasses() {
+            const container = document.getElementById('activeClassesCardsContainer') || document.getElementById('tabContentGrades');
+            if (!container) return;
+
+            const countEl = document.getElementById('activeClassesCount');
+            if (countEl) countEl.textContent = state.classes.length;
+
+            // Compute overall GPA
+            let gpaSum = 0;
+            let gpaCount = 0;
+
+            state.classes.forEach(c => {
+                const calc = calculateClassGrade(c);
+                if (calc.percent !== null) {
+                    gpaSum += calc.gpa;
+                    gpaCount++;
+                }
+            });
+
+            const cumulativeGpaEl = document.getElementById('cumulativeGpa');
+            if (cumulativeGpaEl) {
+                cumulativeGpaEl.textContent = gpaCount > 0 ? (gpaSum / gpaCount).toFixed(2) : '--';
+            }
+
+            container.innerHTML = '';
+
+            if (state.classes.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200 p-6">
+                        <i class="fa-solid fa-book-open text-4xl text-slate-300 mb-3"></i>
+                        <h4 class="text-sm font-bold text-slate-700">No Active Courses Enrolled</h4>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">Click "+ Add Class" to begin adding your courses and calculating grades.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            state.classes.forEach(c => {
+                const calc = calculateClassGrade(c);
+
+                const card = document.createElement('div');
+                card.className = "class-card bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4 fade-in";
+
+                let gradesRows = (c.grades || []).map(g => {
+                    let catBadge = `<span class="bg-indigo-100 text-indigo-700 font-bold px-2 py-0.5 rounded text-[10px] uppercase">Major 60%</span>`;
+                    if (g.category === 'minor') catBadge = `<span class="bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px] uppercase">Minor 30%</span>`;
+                    if (g.category === 'formative') catBadge = `<span class="bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded text-[10px] uppercase">Formative 10%</span>`;
+
+                    const pct = Math.round((g.earned / g.total) * 100);
+
+                    return `
+                        <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-xs">
+                            <div class="space-y-0.5">
+                                <div class="font-bold text-slate-800">${g.title}</div>
+                                <div class="text-[10px] text-slate-400 flex items-center gap-2">
+                                    <span>${g.earned} / ${g.total} pts (${pct}%)</span>
+                                    ${catBadge}
+                                </div>
+                            </div>
+                            <button onclick="deleteGrade('${c.id}', '${g.id}')" class="text-slate-300 hover:text-rose-500 transition p-1" title="Delete Grade">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                if (!gradesRows) {
+                    gradesRows = `<p class="text-xs text-slate-400 italic text-center py-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">No grades added yet. Click "+ Add Grade" to begin.</p>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start border-b border-slate-100 pb-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-lg font-bold text-slate-900">${c.name}</h3>
+                                ${c.isHsCredit === 'yes' ? '<span class="text-[10px] bg-amber-500 text-slate-900 font-extrabold px-2 py-0.5 rounded-md shadow-xs">HS Credit</span>' : ''}
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Teacher: ${c.teacher || 'Unassigned'} • Subject: ${c.subject || 'General'}</p>
+                            ${c.notes ? `<p class="text-[11px] text-indigo-600 font-medium mt-1"><i class="fa-solid fa-note-sticky me-1"></i>${c.notes}</p>` : ''}
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="text-right">
+                                <div class="text-2xl font-black text-indigo-900 leading-none">${calc.percent !== null ? calc.percent + '%' : 'N/A'}</div>
+                                <div class="text-xs font-bold text-indigo-600 mt-0.5">${calc.letter} ${calc.percent !== null ? `(${calc.gpa.toFixed(1)} GPA)` : ''}</div>
+                            </div>
+                            <button onclick="openDeleteModal('${c.id}')" class="text-slate-300 hover:text-rose-600 transition p-1.5" title="Delete Course">
+                                <i class="fa-solid fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                            <span>Assignments & Assessments</span>
+                            <button onclick="openAddGradeModal('${c.id}')" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-plus text-[10px]"></i> Add Grade
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            ${gradesRows}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Render Credits & High School Progress Tab
+        function renderCreditsTab() {
+            const tableBody = document.getElementById('creditsTableBody');
+            const hsGpaEl = document.getElementById('hsCreditGpa');
+            const totalEarnedEl = document.getElementById('totalCreditsEarned');
+            const totalInProgressEl = document.getElementById('totalCreditsInProgress');
+
+            if (!tableBody) return;
+
+            const subjectRequirements = [
+                { name: 'English', required: 4 },
+                { name: 'Math', required: 3 },
+                { name: 'Science', required: 3 },
+                { name: 'History & Social Science', required: 3 },
+                { name: 'World Language', required: 3 },
+                { name: 'Health and PE', required: 2 },
+                { name: 'CTE or Fine Arts', required: 2 },
+                { name: 'Elective', required: 1 },
+                { name: 'Economics', required: 0.5 },
+                { name: 'Personal Finance', required: 0.5 }
+            ];
+
+            let hsGpaSum = 0;
+            let hsGpaCount = 0;
+            let grandEarned = 0;
+            let grandInProgress = 0;
+
+            tableBody.innerHTML = '';
+
+            subjectRequirements.forEach(req => {
+                // Find completed (archived) HS credit courses for this subject
+                let earnedCredits = 0;
+                state.archives.forEach(arch => {
+                    arch.classes.forEach(c => {
+                        if (c.isHsCredit === 'yes' && c.subject === req.name) {
+                            earnedCredits += 1;
+                            const calc = calculateClassGrade(c);
+                            if (calc.percent !== null) {
+                                hsGpaSum += calc.gpa;
+                                hsGpaCount++;
+                            }
+                        }
+                    });
+                });
+
+                // Find active in-progress HS credit courses for this subject
+                let inProgressCredits = 0;
+                state.classes.forEach(c => {
+                    if (c.isHsCredit === 'yes' && c.subject === req.name) {
+                        inProgressCredits += 1;
+                        const calc = calculateClassGrade(c);
+                        if (calc.percent !== null) {
+                            hsGpaSum += calc.gpa;
+                            hsGpaCount++;
+                        }
+                    }
+                });
+
+                grandEarned += earnedCredits;
+                grandInProgress += inProgressCredits;
+
+                const earnedPct = Math.min(100, (earnedCredits / req.required) * 100);
+                const inProgressPct = Math.min(100 - earnedPct, (inProgressCredits / req.required) * 100);
+                const totalPct = Math.min(100, Math.round(((earnedCredits + inProgressCredits) / req.required) * 100));
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-800">${req.name}</td>
+                    <td class="p-3 text-center font-bold text-emerald-600">${totalPct.toFixed(1)}%</td>
+                    <td class="p-3">
+                        <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden flex border border-slate-300/40">
+                            <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${earnedPct}%" title="Earned: ${earnedCredits} / ${req.required} credits"></div>
+                            <div class="bg-amber-500 h-full transition-all duration-300" style="width: ${inProgressPct}%" title="In Progress: ${inProgressCredits} credits"></div>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            if (hsGpaEl) hsGpaEl.textContent = hsGpaCount > 0 ? (hsGpaSum / hsGpaCount).toFixed(2) : '--';
+            if (totalEarnedEl) totalEarnedEl.textContent = `${grandEarned} / 22`;
+            if (totalInProgressEl) totalInProgressEl.textContent = `${grandInProgress}`;
+        }
+
+        // Archive School Year Modal Logic
+        function openArchiveModal() {
+            document.getElementById('inputArchiveYearLabel').value = '2026-2027';
+            document.getElementById('modalArchiveYear').classList.remove('hidden');
+        }
+
+        function closeArchiveModal() {
+            document.getElementById('modalArchiveYear').classList.add('hidden');
+        }
+
+        function confirmArchiveCurrentYear(e) {
+            e.preventDefault();
+            const yearLabel = document.getElementById('inputArchiveYearLabel').value.trim() || '2026-2027';
+
+            if (state.classes.length === 0) {
+                closeArchiveModal();
+                return;
+            }
+
+            const archiveGroup = {
+                id: 'arch_' + Date.now(),
+                year: yearLabel,
+                date: new Date().toLocaleDateString(),
+                classes: [...state.classes]
+            };
+
+            state.archives.unshift(archiveGroup);
+            state.classes = [];
+            saveData();
+            renderClasses();
+            renderArchives();
+            renderCreditsTab();
+            closeArchiveModal();
+            switchTab('archive');
+        }
+
+        function saveData() {
+            localStorage.setItem('lcps_classes', JSON.stringify(state.classes));
+            localStorage.setItem('lcps_archives', JSON.stringify(state.archives));
+            localStorage.setItem('lcps_events', JSON.stringify(state.customEvents));
+            localStorage.setItem('lcps_user', JSON.stringify(state.user));
+            localStorage.setItem('lcps_county', state.countyPreset);
+            localStorage.setItem('lcps_weights', JSON.stringify(state.weights));
+        }
+
+        // Render Archives grouped by year
+        function renderArchives() {
+            const container = document.getElementById('archiveContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (state.archives.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-2xl border border-slate-200 p-6">
+                        <i class="fa-solid fa-box-archive text-4xl text-slate-300 mb-3"></i>
+                        <h4 class="text-sm font-bold text-slate-700">No Archived Courses Yet</h4>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">When an academic term or school year ends, courses move here organized by year to preserve your credit history.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            state.archives.forEach(archiveGroup => {
+                const groupEl = document.createElement('div');
+                groupEl.className = 'bg-white rounded-2xl border border-slate-200 overflow-hidden space-y-3 p-5 shadow-sm';
+                
+                let classesHtml = archiveGroup.classes.map(c => {
+                    const calc = calculateClassGrade(c);
+                    return `
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 flex justify-between items-center text-xs">
+                            <div>
+                                <div class="font-bold text-slate-800 flex items-center gap-2">
+                                    ${c.name} 
+                                    ${c.isHsCredit === 'yes' ? '<span class="text-[9px] bg-amber-500 text-slate-900 font-extrabold px-1.5 py-0.5 rounded">HS Credit</span>' : ''}
+                                </div>
+                                <div class="text-[10px] text-slate-500">Teacher: ${c.teacher || 'N/A'} • ${c.subject || 'General'}</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="font-bold text-indigo-900 text-sm">${calc.percent !== null ? calc.percent + '%' : 'N/A'} (${calc.letter})</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                groupEl.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                        <h3 class="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-folder-closed text-amber-500"></i> ${archiveGroup.year} School Year
+                        </h3>
+                        <span class="text-xs bg-slate-100 font-bold text-slate-600 px-2.5 py-1 rounded-full">${archiveGroup.classes.length} Courses</span>
+                    </div>
+                    <div class="space-y-2">
+                        ${classesHtml}
+                    </div>
+                `;
+                container.appendChild(groupEl);
+            });
+        }
+    </script>
+</body>
+</html>
